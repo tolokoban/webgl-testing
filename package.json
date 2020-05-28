@@ -1,5 +1,5 @@
 {
-    "name": "<<< CHANGE THIS NAME PLEASE! >>>",
+    "name": "webgl-testing",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
@@ -12,10 +12,11 @@
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
         "react-scripts": "3.4.1",
+        "tfw": "^0.31.0",
         "typescript": "^3.7.5"
     },
     "scripts": {
-        "start": "PORT=3000 react-scripts start",
+        "start": "PORT=3789 react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
