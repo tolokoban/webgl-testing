@@ -1,5 +1,5 @@
 void main() {
-    varNormal = attNormal;
+    varNormal = reflect(attLocation, attNormal);
     varWeight = attWeight;
     varValley = attValley;
     varUV = attUV;

@@ -2,7 +2,7 @@ import Texture from './texture'
 
 export interface ICubeMapTextureParams {
     id: string,
-    gl: WebGL2RenderingContext,
+    gl: WebGL2RenderingContext | WebGLRenderingContext,
     sourcePosX: HTMLImageElement | HTMLCanvasElement,
     sourceNegX: HTMLImageElement | HTMLCanvasElement,
     sourcePosY: HTMLImageElement | HTMLCanvasElement,
@@ -39,7 +39,9 @@ export default class CubeMapTexture extends Texture {
 
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
+        if (gl instanceof WebGL2RenderingContext) {
+            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
+        }
         gl.generateMipmap(gl.TEXTURE_CUBE_MAP)
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR)
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)

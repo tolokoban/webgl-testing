@@ -52,18 +52,15 @@ export default abstract class Space3D extends AbstractCamera {
         const lat = Calc.clamp(latitude, -ALMOST_HALF_PI, ALMOST_HALF_PI)
         const lng = longitude
 
-        Calc.matrix.rotation4X(-lat, rotationX)
-        Calc.matrix.rotation4Y(lng, rotationY)
-        Calc.matrix.multiply4(rotationY, rotationX, cameraMatrix)
+        Calc.matrix.rotation4X(lat, rotationX)
+        Calc.matrix.rotation4Y(-lng, rotationY)
+        Calc.matrix.identity4(cameraMatrix)
+        Calc.matrix.multiply4(rotationX, rotationY, cameraMatrix)
 
-        const radius = Math.cos(lat)
+        const tX = targetX
+        const tY = targetY
+        const tZ = targetZ + distance
 
-        const tX = targetX + distance * radius * Math.sin(lng)
-        const tY = targetZ + distance * Math.sin(lat)
-        const tZ = targetY + distance * radius * Math.cos(lng)
-
-        console.info("tX, tY, tZ=", tX, tY, tZ)
-        console.info("rotationX=", rotationX)
         cameraMatrix[Calc.M4_03] = -tX
         cameraMatrix[Calc.M4_13] = -tY
         cameraMatrix[Calc.M4_23] = -tZ

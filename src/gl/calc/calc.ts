@@ -10,6 +10,12 @@ const EPSILON = 0.00000001
 const COS = new Float32Array(FULL_TURN)
 const SIN = new Float32Array(FULL_TURN)
 
+// Temporary vectors to used for internal computations.
+const vec3tmp1 = new Float32Array(3)
+const vec3tmp2 = new Float32Array(3)
+const vec3tmp3 = new Float32Array(3)
+const vec3tmp4 = new Float32Array(3)
+
 // Prepare acceleration table for COS and SIN.
 for (let i = 0; i < FULL_TURN; i++) {
     const angle = (Math.PI * i) / HALF_TURN
@@ -104,6 +110,18 @@ const vector = {
         return new Float32Array(VEC4_LENGTH)
     },
 
+    add3(a: IVec3, b: IVec3, output: IVec3) {
+        output[X] = a[X] + b[X]
+        output[Y] = a[Y] + b[Y]
+        output[Z] = a[Z] + b[Z]
+    },
+
+    substract3(a: IVec3, b: IVec3, output: IVec3) {
+        output[X] = a[X] - b[X]
+        output[Y] = a[Y] - b[Y]
+        output[Z] = a[Z] - b[Z]
+    },
+
     cross3(a: IVec3, b: IVec3, output: IVec3) {
         output[X] = a[Y] * b[Z] - a[Z] * b[Y]
         output[Y] = a[Z] * b[X] - a[X] * b[Z]
@@ -128,9 +146,10 @@ const vector = {
      */
     normalize3(input: IVec3, output: IVec3) {
         const len = vector.length3(input)
-        output[X] = input[X] * len
-        output[Y] = input[Y] * len
-        output[Z] = input[Z] * len
+        const lenInv = len > 0 ? 1 / len : 1
+        output[X] = input[X] * lenInv
+        output[Y] = input[Y] * lenInv
+        output[Z] = input[Z] * lenInv
     },
 
     /**
@@ -230,6 +249,76 @@ const matrix = {
         mat3[M3_02] = mat4[M4_02]
         mat3[M3_12] = mat4[M4_12]
         mat3[M3_22] = mat4[M4_22]
+    },
+
+    extractX3From4(mat4: IMat4, vec3: IVec3) {
+        vec3[X] = mat4[M4_00]
+        vec3[Y] = mat4[M4_10]
+        vec3[Z] = mat4[M4_20]
+    },
+
+    extractX4From4(mat4: IMat4, vec4: IVec4) {
+        vec4[X] = mat4[M4_00]
+        vec4[Y] = mat4[M4_10]
+        vec4[Z] = mat4[M4_20]
+        vec4[W] = mat4[M4_30]
+    },
+
+    extractY3From4(mat4: IMat4, vec3: IVec3) {
+        vec3[X] = mat4[M4_01]
+        vec3[Y] = mat4[M4_11]
+        vec3[Z] = mat4[M4_21]
+    },
+
+    extractY4From4(mat4: IMat4, vec4: IVec4) {
+        vec4[X] = mat4[M4_01]
+        vec4[Y] = mat4[M4_11]
+        vec4[Z] = mat4[M4_21]
+        vec4[W] = mat4[M4_31]
+    },
+
+    extractZ3From4(mat4: IMat4, vec3: IVec3) {
+        vec3[X] = mat4[M4_02]
+        vec3[Y] = mat4[M4_12]
+        vec3[Z] = mat4[M4_22]
+    },
+
+    extractZ4From4(mat4: IMat4, vec4: IVec4) {
+        vec4[X] = mat4[M4_02]
+        vec4[Y] = mat4[M4_12]
+        vec4[Z] = mat4[M4_22]
+        vec4[W] = mat4[M4_32]
+    },
+
+    lookAt4(pos: IVec3, target: IVec3, up: IVec3, mat4: IMat4) {
+        mat4[M4_03] = pos[X]
+        mat4[M4_13] = pos[Y]
+        mat4[M4_23] = pos[Z]
+        mat4[M4_33] = 1
+
+        const dir = vec3tmp1
+        const right = vec3tmp2
+        const orthogonalUp = vec3tmp3
+        const normalizedUp = vec3tmp4
+
+        vector.substract3(target, pos, dir)
+        vector.normalize3(dir, dir)
+        vector.normalize3(up, normalizedUp)
+        vector.cross3(dir, normalizedUp, right)
+        vector.cross3(right, dir, orthogonalUp)
+
+        mat4[M4_00] = right[X]
+        mat4[M4_10] = right[Y]
+        mat4[M4_20] = right[Z]
+        mat4[M4_30] = 0
+        mat4[M4_01] = orthogonalUp[X]
+        mat4[M4_11] = orthogonalUp[Y]
+        mat4[M4_21] = orthogonalUp[Z]
+        mat4[M4_31] = 0
+        mat4[M4_02] = dir[X]
+        mat4[M4_12] = dir[Y]
+        mat4[M4_22] = dir[Z]
+        mat4[M4_32] = 0
     },
 
     multiply3(a: IMat3, b: IMat3, output: IMat3) {

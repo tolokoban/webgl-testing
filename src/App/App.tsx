@@ -26,9 +26,9 @@ export default class App extends React.Component<IAppProps, IAppState> {
     state = {
         thickness: 0.1,
         smoothness: 0.5,
-        latitude: 5,
-        longitude: 0,
-        distance: 16
+        latitude: 20,
+        longitude: 30,
+        distance: 25
     }
 
     private refCanvas = React.createRef<HTMLCanvasElement>()
@@ -45,7 +45,7 @@ export default class App extends React.Component<IAppProps, IAppState> {
 
         scene.onAnimation = (time: number, width: number, height: number) => {
             //gl.clearColor(0, 0.4, 0.867, 1.0)
-            gl.clearColor(0.3, 0.3, 0.4, 1.0)
+            gl.clearColor(0.2, 0.3, 0.4, 1.0)
             gl.clearDepth(+1)
             gl.depthFunc(gl.LESS)
             gl.enable(gl.DEPTH_TEST)

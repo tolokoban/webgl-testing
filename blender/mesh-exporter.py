@@ -25,11 +25,11 @@ def export(object, directory):
             vert = verts[face.vertices[vert_idx]]
             vert_idx += 1
             (x, y, z) = vert.co
-            data.append("%.3f,%.3f,%.3f" % (x, z, y))
+            data.append("%.3f,%.3f,%.3f" % (x, z, -y))
             (texture_u, texture_v) = uv_layer[loop_index].uv
             data.append("%.3f,%.3f" % (texture_u, texture_v))
             (normal_x, normal_y, normal_z) = loops[loop_index].normal
-            data.append("%.6f,%.6f,%.6f" % (normal_x, normal_z, normal_y))
+            data.append("%.6f,%.6f,%.6f" % (normal_x, normal_z, -normal_y))
     # Youpi les amis
     filepath = f"{directory}/{object.name}.json"
     with open(filepath, "w", encoding="utf8", newline="\n") as f:

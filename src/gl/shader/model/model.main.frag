@@ -1,5 +1,5 @@
 void main() {
-    vec3 light = normalize(vec3(0.5, 1.0, 0.2));
+    vec3 light = normalize(vec3(0.1, 0.2, -1.0));
     float power = dot(light, normalize(varNormal));
     float lightEffect = (power + 1.1) * 0.5;
     vec3 baseColor = texture2D(uniTexture, varUV).xyz * lightEffect;

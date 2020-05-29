@@ -12,8 +12,8 @@ export default abstract class Texture {
     constructor(
         protected readonly gl: IWebGL,
         protected readonly id: string,
-        target: ITarget) {
-
+        target: ITarget
+    ) {
         const texture = gl.createTexture()
         if (!texture) throw Error(`[FlatLand] Unable to create texture "${id}"!`)
         this.texture = texture
