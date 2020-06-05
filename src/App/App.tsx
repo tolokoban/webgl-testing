@@ -2,7 +2,7 @@
 import Tfw from 'tfw'
 import React from "react"
 import Scene from '../gl/scene'
-import ModelFactory from '../gl/factory/model'
+import WorldObj from './world-obj'
 import PerspectiveCamera from '../gl/camera/perpective'
 import Calc from '../gl/calc'
 
@@ -16,92 +16,81 @@ interface IAppProps {
 
 interface IAppState {
     thickness: number
-    smoothness: number
-    latitude: number
-    longitude: number
     distance: number
 }
 
 export default class App extends React.Component<IAppProps, IAppState> {
     state = {
-        thickness: 0.1,
-        smoothness: 0.5,
-        latitude: 20,
-        longitude: 30,
-        distance: 25
+        thickness: 2,
+        distance: 35
     }
 
     private refCanvas = React.createRef<HTMLCanvasElement>()
     private scene?: Scene
-    private camera = new PerspectiveCamera()
 
     async componentDidMount() {
         const canvas = this.refCanvas.current
         if (!canvas) return
         const scene = new Scene(canvas)
-        const modelFactory = new ModelFactory(scene)
-        const car = await modelFactory.createAsync("./mesh/Car.json")
+        scene.camera = new PerspectiveCamera()
         const { gl } = scene
 
-        scene.onAnimation = (time: number, width: number, height: number) => {
+        const car = await WorldObj.createAsync(scene, "./assets/mesh/Car.json")
+        const island = await WorldObj.createAsync(scene, "./assets/mesh/Island-A.json")
+        island.thickness = 2
+
+        let dis = 35
+        let lat = 0
+        let lng = 30
+
+        scene.onAnimation = (time: number) => {
             //gl.clearColor(0, 0.4, 0.867, 1.0)
             gl.clearColor(0.2, 0.3, 0.4, 1.0)
             gl.clearDepth(+1)
             gl.depthFunc(gl.LESS)
             gl.enable(gl.DEPTH_TEST)
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-            this.camera.setUniformValues(car.program, width, height)
-            car.paint()
+
+            island.thickness = this.state.thickness
+            car.thickness = this.state.thickness
+            // island.color[0] = 1 - Math.abs(Math.cos(time * 0.003))
+            // island.color[1] = island.color[0] * 0.5
+            car.y = Math.abs(Math.cos(time * 0.002)) * 3
+            car.x = 3 + Math.sin(time * 0.002) * 3
+
+            lng = time * 0.000314
+            lat = Math.cos(time * 0.0004841)
+            dis = this.state.distance
+            const camera = scene.camera as PerspectiveCamera
+            camera.orbit(car.x, 0, 0, dis, lat, lng)
+
+            island.paint(time)
+            car.paint(time)
         }
 
         this.scene = scene
-        scene.isRendering = false
-        this.refresh()
+        scene.isRendering = true
     }
-
-    componentDidUpdate() {
-        this.refresh()
-    }
-
-    private refresh = Tfw.Throttler(
-        () => {
-            const { distance, latitude, longitude } = this.state
-            this.camera.orbit(
-                0, 0, 0,
-                distance, Calc.deg2rad(latitude), Calc.deg2rad(longitude)
-            )
-            if (this.scene) this.scene.refresh()
-        },
-        50
-    )
 
     render() {
         const classes = ['App', 'thm-bg0']
         if (this.props.className) classes.push(this.props.className)
 
         return (<div className={classes.join(' ')}>
+            <canvas ref={this.refCanvas}></canvas>
             <div className="controls">
-                <canvas ref={this.refCanvas}></canvas>
                 <Slider
-                    label="Latitude"
-                    min={-89}
-                    max={+89}
+                    label="Thickness"
+                    min={0}
+                    max={20}
                     step={1}
-                    value={this.state.latitude}
-                    onChange={latitude => this.setState({ latitude })}
-                />
-                <Slider
-                    label="Longitude"
-                    min={-180}
-                    max={+180}
-                    step={1}
-                    value={this.state.longitude}
-                    onChange={longitude => this.setState({ longitude })}
+                    value={this.state.thickness}
+                    onChange={thickness => this.setState({ thickness })}
                 />
                 <Slider
                     label="Distance"
                     min={1}
-                    max={50}
+                    max={100}
                     step={1}
                     value={this.state.distance}
                     onChange={distance => this.setState({ distance })}

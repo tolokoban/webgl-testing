@@ -43,3 +43,28 @@ export type IVec3 = Float32Array
 export type IVec4 = Float32Array
 export type IMat3 = Float32Array
 export type IMat4 = Float32Array
+
+export type IUniformStringType =
+    "float" | "vec2" | "vec3" | "vec4" | "mat2" | "mat3" | "mat4" | "sampler2D" | "samplerCube"
+export type IAttributeStringType =
+    "float" | "vec2" | "vec3" | "vec4"
+export type IVaryingStringType =
+    "float" | "vec2" | "vec3" | "vec4" | "mat2" | "mat3" | "mat4"
+
+interface IMap<T> { [key: string]: T }
+type IArray<T> = T | [T, number]
+
+interface IFriendlyShaderDefinition {
+    uniforms: IMap<IArray<IUniformStringType>>
+    functions: IFunctionTypes
+}
+
+export interface IFriendlyFragmentDefinition extends IFriendlyShaderDefinition {
+    dependencies: Array<Partial<IFriendlyFragmentDefinition>>
+}
+
+export interface IFriendlyVertexDefinition extends IFriendlyShaderDefinition {
+    attributes: IMap<IAttributeStringType>
+    varyings: IMap<IArray<IVaryingStringType>>
+    dependencies: Array<Partial<IFriendlyVertexDefinition>>
+}

@@ -1,6 +1,11 @@
 import Pointer from '../pointer'
 import Resize from '../resize'
 import TextureFactory from '../factory/texture'
+import ProgramFactory from '../factory/program'
+import BufferFactory from '../factory/buffer'
+import Camera from '../camera'
+import PerspectiveCamera from '../camera/perpective'
+import { IWebGL } from '../types'
 
 type IAnimationFunction = (time: number, width: number, height: number) => void
 export interface ISceneParams {
@@ -12,23 +17,34 @@ export default class Scene {
     resolution = 1
     onAnimation?: IAnimationFunction
 
-    private readonly _gl: WebGL2RenderingContext
+    private readonly _gl: IWebGL
     private readonly _pointer: Pointer
     private _isRendering = false
     private lastRenderingTime = 0
     public readonly textures: TextureFactory
+    public readonly buffers: BufferFactory
+    public readonly programs: ProgramFactory
+    public camera: Camera = new PerspectiveCamera()
 
     constructor(canvas: HTMLCanvasElement) {
         this._pointer = new Pointer(canvas)
-        const gl = canvas.getContext('webgl2', {
+        let gl: IWebGL | null = canvas.getContext('webgl2', {
             // Specify WebGL options.
         })
+        if (!gl) {
+            console.warn("WebGL2 is not available! Switching to WebGL.")
+            gl = canvas.getContext('webgl', {
+                // Specify WebGL options.
+            })
+        }
         if (!gl) {
             throw new Error('Unable to create a WegGL context!')
         }
 
         this._gl = gl
         this.textures = new TextureFactory(gl)
+        this.buffers = new BufferFactory(gl)
+        this.programs = new ProgramFactory(gl)
     }
 
     get isRendering() { return this._isRendering }
@@ -40,7 +56,7 @@ export default class Scene {
         }
     }
 
-    get gl(): WebGL2RenderingContext {
+    get gl(): IWebGL {
         return this._gl
     }
 
@@ -89,8 +105,6 @@ export default class Scene {
             return
         }
 
-        const delta = time - lastRenderingTime
-
         Resize(gl, this.resolution)
 
         gl.clearDepth(+1)
@@ -111,7 +125,7 @@ export default class Scene {
             console.error('##################################')
             console.error('# Rendering   has  been  stopped #')
             console.error('# because of the following error #')
-            console.error('#################################')
+            console.error('##################################')
             console.error(ex)
         }
     }

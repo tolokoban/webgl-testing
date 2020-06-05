@@ -1,12 +1,8 @@
-import Program from "../program"
-import ShaderFactory from '../factory/shader'
-import Shader from '../shader/abstract-shader'
 import AbstractCamera from "./abstract-camera"
 import Calc from "../calc"
 import { IMat3, IMat4 } from '../types'
 
 const HALF = 0.5
-const HALF_PI = Math.PI * HALF
 // Its PI/2 - Epsilon
 const ALMOST_HALF_PI = 1.570796326794896
 
@@ -17,7 +13,6 @@ export default abstract class Space3D extends AbstractCamera {
     protected readonly cameraMatrix: IMat4 = Calc.matrix.createMat4()
     private readonly rotationY = Calc.matrix.createMat4()
     private readonly rotationX = Calc.matrix.createMat4()
-    private readonly transfo = Calc.matrix.createMat4()
 
     /**
      * The camera matrix holds all the transformations to get a point

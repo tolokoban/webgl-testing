@@ -1,5 +1,5 @@
 import Program from "../program"
-import Shader from '../shader/abstract-shader'
+import { IFriendlyVertexDefinition } from '../types'
 
 /**
  * The Camera is responsible of transforming World coordinates into
@@ -8,6 +8,7 @@ import Shader from '../shader/abstract-shader'
  *
  * ```glsl
  * vec4 worldPointToScreen(vec3 point)
+ * vec3 worldVectorToScreen(vec3 vector)
  * ```
  *
  * And it can work only if the following attributes are defined:
@@ -23,20 +24,20 @@ import Shader from '../shader/abstract-shader'
  * * `glslFunction`
  */
 export default abstract class AbstractCamera {
-    abstract get vertexShader(): Shader
+    abstract get id(): string
+
+    abstract get vertexShader(): Partial<IFriendlyVertexDefinition>
 
     /**
      * @param prg - Attributes have to be set in this Program.
      * @param width - Canvas Width.
      * @param height - Canvas Height.
      * @param time - Time of the rendered frame in milliseconds.
-     * @param delta - Number of milliseconds since the last rendered frame.
      */
     abstract setUniformValues(
         prg: Program,
         width: number,
         height: number,
-        time: number,
-        delta: number
+        time: number
     ): void
 }

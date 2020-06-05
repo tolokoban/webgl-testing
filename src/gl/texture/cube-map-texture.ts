@@ -8,11 +8,12 @@ export interface ICubeMapTextureParams {
     sourcePosY: HTMLImageElement | HTMLCanvasElement,
     sourceNegY: HTMLImageElement | HTMLCanvasElement,
     sourcePosZ: HTMLImageElement | HTMLCanvasElement,
-    sourceNegZ: HTMLImageElement | HTMLCanvasElement
+    sourceNegZ: HTMLImageElement | HTMLCanvasElement,
+    confirmDestroy(): boolean
 }
 
 export default class CubeMapTexture extends Texture {
-    constructor(params: ICubeMapTextureParams) {
+    constructor(private params: ICubeMapTextureParams) {
         super(params.gl, params.id, "cubeMap")
 
         const { gl } = params
@@ -46,4 +47,16 @@ export default class CubeMapTexture extends Texture {
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR)
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
     }
+
+    /**
+     * When a client doen't need this texture anymore,
+     * it calls `destroy()` on it.
+     * The texture will be destroyed if this is the last client using it.
+     */
+    destroy() {
+        if (!this.params.confirmDestroy()) return false
+        this.params.gl.deleteTexture(this.texture)
+        return true
+    }
+
 }

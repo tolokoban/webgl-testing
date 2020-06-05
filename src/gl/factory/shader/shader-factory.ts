@@ -6,26 +6,33 @@ import {
     IVaryingTypes,
     IUniformType,
     IUniformTypes,
-    IFunctionTypes
+    IFunctionTypes,
+    IFriendlyVertexDefinition,
+    IFriendlyFragmentDefinition,
+    IUniformStringType,
+    IAttributeStringType,
+    IVaryingStringType
 } from '../../types'
 
 export default {
-    createVertShader: (def: Partial<IFriendlyVertexDefinition>) => new CustomShader(def),
-    createFragShader: (def: Partial<IFriendlyFragmentDefinition>) => new CustomShader(def)
+    createVertShader: (def: Partial<IFriendlyVertexDefinition>) =>
+        new CustomVertexShader(def),
+    createFragShader: (def: Partial<IFriendlyFragmentDefinition>) =>
+        new CustomFragmentShader(def)
 }
 
 
-class CustomShader extends AbstractShader {
+class CustomVertexShader extends AbstractShader {
     private readonly definition: IDefinition
 
-    constructor(def: Partial<IFriendlyDefinition>) {
+    constructor(def: Partial<IFriendlyVertexDefinition>) {
         super()
         this.definition = {
             uniforms: convertFriendlyUniforms(def.uniforms),
             attributes: convertFriendlyAttributes(def.attributes),
             varyings: convertFriendlyVaryings(def.varyings),
             functions: def.functions || {},
-            dependencies: def.dependencies || [],
+            dependencies: convertFriendlyVertexDependencies(def.dependencies)
         }
     }
 
@@ -36,6 +43,44 @@ class CustomShader extends AbstractShader {
     get dependenciesDefinition() { return this.definition.dependencies }
 }
 
+
+class CustomFragmentShader extends AbstractShader {
+    private readonly definition: IDefinition
+
+    constructor(def: Partial<IFriendlyFragmentDefinition>) {
+        super()
+        this.definition = {
+            uniforms: convertFriendlyUniforms(def.uniforms),
+            attributes: {},
+            varyings: {},
+            functions: def.functions || {},
+            dependencies: convertFriendlyFragmentDependencies(def.dependencies)
+        }
+    }
+
+    get uniformsDefinition() { return this.definition.uniforms }
+    get attributesDefinition() { return this.definition.attributes }
+    get varyingsDefinition() { return this.definition.varyings }
+    get functionsDefinition() { return this.definition.functions }
+    get dependenciesDefinition() { return this.definition.dependencies }
+}
+
+
+function convertFriendlyVertexDependencies(dependencies?: Array<Partial<IFriendlyVertexDefinition>>) {
+    if (!Array.isArray(dependencies)) return []
+    return dependencies.map(
+        (dep: Partial<IFriendlyVertexDefinition>) =>
+            new CustomVertexShader(dep)
+    )
+}
+
+function convertFriendlyFragmentDependencies(dependencies?: Array<Partial<IFriendlyFragmentDefinition>>) {
+    if (!Array.isArray(dependencies)) return []
+    return dependencies.map(
+        (dep: Partial<IFriendlyFragmentDefinition>) =>
+            new CustomFragmentShader(dep)
+    )
+}
 
 function convertFriendlyUniforms(uniforms?: IMap<IArray<IUniformStringType>>): IUniformTypes {
     if (!uniforms) return {}
@@ -121,23 +166,3 @@ interface IDefinition {
 
 interface IMap<T> { [key: string]: T }
 type IArray<T> = T | [T, number]
-
-type IUniformStringType =
-    "float" | "vec2" | "vec3" | "vec4" | "mat2" | "mat3" | "mat4" | "sampler2D" | "samplerCube"
-type IAttributeStringType =
-    "float" | "vec2" | "vec3" | "vec4"
-type IVaryingStringType =
-    "float" | "vec2" | "vec3" | "vec4" | "mat2" | "mat3" | "mat4"
-
-interface IFriendlyFragmentDefinition {
-    uniforms: IMap<IArray<IUniformStringType>>
-    functions: IFunctionTypes
-    dependencies: AbstractShader[]
-}
-
-interface IFriendlyVertexDefinition extends IFriendlyFragmentDefinition {
-    attributes: IMap<IAttributeStringType>
-    varyings: IMap<IArray<IVaryingStringType>>
-}
-
-type IFriendlyDefinition = IFriendlyVertexDefinition

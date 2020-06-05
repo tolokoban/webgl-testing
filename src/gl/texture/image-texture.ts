@@ -1,13 +1,14 @@
 import Texture from './texture'
-import { IWebGL } from '../../types'
+import { IWebGL } from '../types'
 
 export interface IImageTextureParams {
-    id: string,
-    gl: IWebGL,
-    source: HTMLImageElement | HTMLCanvasElement,
-    width: number,
-    height: number,
+    id: string
+    gl: IWebGL
+    source: HTMLImageElement | HTMLCanvasElement
+    width: number
+    height: number
     linear: boolean
+    confirmDestroy(): boolean
 }
 
 export default class ImageTexture extends Texture {
@@ -32,5 +33,16 @@ export default class ImageTexture extends Texture {
         const { gl } = this.params
         gl.bindTexture(gl.TEXTURE_2D, this.texture)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source)
+    }
+
+    /**
+     * When a client doen't need this texture anymore,
+     * it calls `destroy()` on it.
+     * The texture will be destroyed if this is the last client using it.
+     */
+    destroy() {
+        if (!this.params.confirmDestroy()) return false
+        this.params.gl.deleteTexture(this.texture)
+        return true
     }
 }

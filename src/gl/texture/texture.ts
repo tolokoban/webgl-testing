@@ -1,10 +1,8 @@
-import { IWebGL } from '../../types'
+import { IWebGL } from '../types'
 
 type ITarget = "2d" | "cubeMap" | "3d" | "2dArray"
 
 export default abstract class Texture {
-    private sharingCounter = 0
-    private _isDestroyed = false
     protected readonly texture: WebGLTexture
     protected readonly target: GLenum
     protected readonly units: GLenum[]
@@ -55,35 +53,11 @@ export default abstract class Texture {
         ]
     }
 
-    get isDestroyed() { return this._isDestroyed }
-
-    /**
-     * Many painters can share the same texture.
-     * For memory management, it's important to know
-     * how many users this texture has to be shared with.
-     *
-     * Call share() as soon as you need to use a texture
-     * and destroy() as soon as you don't need it anymore.
-     */
-    share() {
-        this.sharingCounter++
-    }
-
     /**
      * Remove the texture from the graphic card memory
      * as soon as no one is using it anymore.
      */
-    destroy() {
-        if (this._isDestroyed) return
-
-        if (this.sharingCounter > 0) {
-            this.sharingCounter--
-            return
-        }
-        const { gl, texture } = this
-        gl.deleteTexture(texture)
-        this._isDestroyed = true
-    }
+    abstract destroy(): boolean
 
     /**
      * Attach this texture to a unit.

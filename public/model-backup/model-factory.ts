@@ -46,7 +46,7 @@ export default class ModelsFactory {
         const modelDef = (await AsyncLoader.loadJson(url)) as IMesh
         const modelBuff = gl.createBuffer()
         if (!modelBuff) throw Error("Unable to create a new WebGLBuffer!")
-        const modelData = createTriangles(modelDef.data)
+        const modelData = createTriangles(modelDef.data, modelDef.attributes.length)
         gl.bindBuffer(gl.ARRAY_BUFFER, modelBuff)
         gl.bufferData(gl.ARRAY_BUFFER, modelData, gl.STATIC_DRAW)
         const modelInfo: IModelInfo = {
@@ -82,7 +82,7 @@ interface IMesh {
 }
 
 
-function createTriangles(data: number[], attributesCount: number = 8): Float32Array {
+function createTriangles(data: number[], attributesCount: number): Float32Array {
     const result: number[] = []
     let cursor = 0
     const chunkSize = attributesCount * 3
@@ -96,9 +96,9 @@ function createTriangles(data: number[], attributesCount: number = 8): Float32Ar
 
 function createTriangle(triCoords: number[]): number[] {
     const [
-        ax, ay, az, au, av, nax, nay, naz,
-        bx, by, bz, bu, bv, nbx, nby, nbz,
-        cx, cy, cz, cu, cv, ncx, ncy, ncz
+        ax, ay, az, au, av, nax, nay, naz, vBCtmp,
+        bx, by, bz, bu, bv, nbx, nby, nbz, vCAtmp,
+        cx, cy, cz, cu, cv, ncx, ncy, ncz, vABtmp
     ] = triCoords
     const [vBC, vCA, vAB] = [0, 0, 0]
     // PtX, PtY, dist to AB, dist to BC, dist CA.

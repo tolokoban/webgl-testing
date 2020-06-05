@@ -1,6 +1,6 @@
 import { IWebGL } from '../../types'
 import Program from '../../program'
-import Texture from '../texture/texture'
+import Texture from '../texture'
 
 export default class Model {
     public readonly gl: IWebGL
@@ -23,8 +23,8 @@ export default class Model {
 
     paint() {
         const { gl, buffer, program, texture, attributesCount } = this
-        const thickness = 0.1
-        const smoothness = 0.5
+        const thickness = 0.05
+        const smoothness = 1
 
         program.use()
         texture.attachToUnit(0)

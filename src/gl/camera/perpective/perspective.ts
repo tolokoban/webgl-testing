@@ -1,28 +1,20 @@
 import Space3D from "../space-3d"
 import Program from "../../program"
-import ShaderFactory from '../../factory/shader'
-import PerspectiveVertexShaderCode from "./perspective.world-point-to-screen.vert"
+import PointVertexShaderCode from "./perspective.world-point-to-screen.vert"
+import VectorVertexShaderCode from "./perspective.world-vector-to-screen.vert"
 import Calc from "../../calc"
+import { IFriendlyVertexDefinition } from '../../types'
 
 const HALF_TURN_DEG = 180
-const DEFAULT_FIELD_ANGLE_DEG = 10
+const DEFAULT_FIELD_ANGLE_DEG = 39.6
 const DEFAULT_FIELD_ANGLE_RAD = DEFAULT_FIELD_ANGLE_DEG * Math.PI / HALF_TURN_DEG
-const MAT4_LENGTH = 16
 const HALF = 0.5
 const DOUBLE = 2
 
-const VERTEX_SHADER = ShaderFactory.createVertShader({
-    uniforms: {
-        uniPerspectiveMatrix: "mat4",
-        uniCameraMatrix: "mat4"
-    },
-    functions: {
-        worldPointToScreen: PerspectiveVertexShaderCode
-    }
-})
 
 export default class Perspective extends Space3D {
-    private perspectiveMatrix = new Float32Array(MAT4_LENGTH)
+    private perspectiveMatrix = Calc.matrix.createMat4()
+    private cameraMatrix3 = Calc.matrix.createMat3()
 
     /**
      * Field view angle expressed in radians.
@@ -31,15 +23,27 @@ export default class Perspective extends Space3D {
     near = 0.1
     far = 1000
 
-    static VertexShader = VERTEX_SHADER
-
     constructor() {
         super()
         const distance = 15
         this.orbit(0, 0, 0, distance, 0, 0)
     }
 
-    get vertexShader() { return Perspective.VertexShader }
+    get id() { return "[CAMERA/PERSPECTIVE]" }
+
+    get vertexShader(): Partial<IFriendlyVertexDefinition> {
+        return {
+            uniforms: {
+                uniPerspectiveMatrix: "mat4",
+                uniCameraMatrix: "mat4",
+                uniCameraMatrix3: "mat3"
+            },
+            functions: {
+                worldPointToScreen: PointVertexShaderCode,
+                worldVectorToScreen: VectorVertexShaderCode
+            }
+        }
+    }
 
     /**
      * @param prg - Attributes have to be set in this Program.
@@ -73,8 +77,12 @@ export default class Perspective extends Space3D {
         result[Calc.M4_23] = near * far * rangeInv * DOUBLE
         result[Calc.M4_33] = 0
 
+        // Used to rotate normals without translating them.
+        Calc.matrix.extract3From4(this.cameraMatrix, this.cameraMatrix3)
+
         prg.use()
         prg.uniforms.set("uniCameraMatrix", this.cameraMatrix)
+        prg.uniforms.set("uniCameraMatrix3", this.cameraMatrix3)
         prg.uniforms.set("uniPerspectiveMatrix", this.perspectiveMatrix)
     }
 }
