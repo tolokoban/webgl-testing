@@ -1,2 +1,0 @@
-(this["webpackJsonpwebgl-testing"]=this["webpackJsonpwebgl-testing"]||[]).push([[6],{61:function(t,n,o){"use strict";var e=function(){function t(t){this.name=t}return t.prototype.load=function(){console.log("Font loaded: ",this.name)},t}();n.a=e},64:function(t,n,o){},68:function(t,n,o){"use strict";o.r(n);var e=o(61);o(64);n.default=new e.a("roboto")}}]);
-//# sourceMappingURL=6.12f29e82.chunk.js.map
