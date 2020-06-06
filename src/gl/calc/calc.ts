@@ -291,6 +291,7 @@ const matrix = {
     },
 
     lookAt4(pos: IVec3, target: IVec3, up: IVec3, mat4: IMat4) {
+        // Translation.
         mat4[M4_03] = pos[X]
         mat4[M4_13] = pos[Y]
         mat4[M4_23] = pos[Z]

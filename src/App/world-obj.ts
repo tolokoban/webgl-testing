@@ -45,6 +45,27 @@ class WorldObj {
         this.outline.z = v
     }
 
+    get scaleX() { return this.body.scaleX }
+    set scaleX(v: number) {
+        this.body.scaleX = v
+        this.outline.scaleX = v
+    }
+    get scaleY() { return this.body.scaleY }
+    set scaleY(v: number) {
+        this.body.scaleY = v
+        this.outline.scaleY = v
+    }
+    get scaleZ() { return this.body.scaleZ }
+    set scaleZ(v: number) {
+        this.body.scaleZ = v
+        this.outline.scaleZ = v
+    }
+
+    setPolarOrientation(latitude: number, longitude: number) {
+        this.body.setPolarOrientation(latitude, longitude)
+        this.outline.setPolarOrientation(latitude, longitude)
+    }
+
     paint(time: number) {
         this.outline.paint(time)
         this.body.paint(time)

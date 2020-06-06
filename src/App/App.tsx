@@ -17,12 +17,14 @@ interface IAppProps {
 interface IAppState {
     thickness: number
     distance: number
+    scaleY: number
 }
 
 export default class App extends React.Component<IAppProps, IAppState> {
     state = {
         thickness: 2,
-        distance: 35
+        distance: 35,
+        scaleY: 1
     }
 
     private refCanvas = React.createRef<HTMLCanvasElement>()
@@ -40,10 +42,17 @@ export default class App extends React.Component<IAppProps, IAppState> {
         island.thickness = 2
 
         let dis = 35
-        let lat = 0
-        let lng = 30
+        let lat = 1
+        let lng = 0
+        let lastTime = 0
+        let lat0 = lat
+        let x0 = 0
+        let y0 = 0
 
         scene.onAnimation = (time: number) => {
+            const delta = time - lastTime
+            lastTime = time
+
             //gl.clearColor(0, 0.4, 0.867, 1.0)
             gl.clearColor(0.2, 0.3, 0.4, 1.0)
             gl.clearDepth(+1)
@@ -57,9 +66,20 @@ export default class App extends React.Component<IAppProps, IAppState> {
             // island.color[1] = island.color[0] * 0.5
             car.y = Math.abs(Math.cos(time * 0.002)) * 3
             car.x = 3 + Math.sin(time * 0.002) * 3
+            car.scaleY = this.state.scaleY
+            //car.setPolarOrientation(0, time * 0.0004515)
+            //car.setPolarOrientation(0, 1)
 
-            lng = time * 0.000314
-            lat = Math.cos(time * 0.0004841)
+            if (scene.pointer.eventDown) {
+                lat0 = lat
+                x0 = scene.pointer.x
+                y0 = scene.pointer.y
+            }
+            if (scene.pointer.down) {
+                lat = lat0 + scene.pointer.y - y0
+            } else {
+                lng += delta * 0.000314
+            }
             dis = this.state.distance
             const camera = scene.camera as PerspectiveCamera
             camera.orbit(car.x, 0, 0, dis, lat, lng)
@@ -86,6 +106,14 @@ export default class App extends React.Component<IAppProps, IAppState> {
                     step={1}
                     value={this.state.thickness}
                     onChange={thickness => this.setState({ thickness })}
+                />
+                <Slider
+                    label="Scale Y"
+                    min={-3}
+                    max={3}
+                    step={0.1}
+                    value={this.state.scaleY}
+                    onChange={scaleY => this.setState({ scaleY })}
                 />
                 <Slider
                     label="Distance"
