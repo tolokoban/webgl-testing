@@ -2,6 +2,7 @@ import Common from '../common'
 import Scene from '../../../scene'
 import Camera from '../../../camera'
 import Program from '../../../program'
+import Transfo from '../../../transfo'
 import FresnelMesh from '../../../mesh/fresnel'
 import MeshDefinition from '../mesh-definition'
 
@@ -18,7 +19,7 @@ interface IParams {
     colorTextureURL: string
 }
 
-async function createAsync(params: IParams): Promise<FresnelMesh> {
+async function createAsync(transfo: Transfo, params: IParams): Promise<FresnelMesh> {
     const { scene, definitionURL, colorTextureURL } = params
     const { camera } = scene
     const id = `[FRESNEL]:${definitionURL}`
@@ -33,6 +34,7 @@ async function createAsync(params: IParams): Promise<FresnelMesh> {
     const program = await createProgramAsync(scene, camera)
     return new FresnelMesh({
         scene: params.scene,
+        transfo,
         arrayBuffer,
         attributesCount,
         colorTexture,

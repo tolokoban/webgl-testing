@@ -1,9 +1,9 @@
-import Calc from '../../../calc'
 import Common from '../common'
 import Scene from '../../../scene'
 import Program from '../../../program'
 import OutlineMesh from '../../../mesh/outline'
 import MeshDefinition from '../mesh-definition'
+import Transfo from '../../../transfo'
 
 import MainVertShader from './main.vert'
 import MainFragShader from './main.frag'
@@ -14,6 +14,7 @@ const ATTRIBUTE_PER_VERTEX = 6
 
 interface IParams {
     scene: Scene
+    transfo: Transfo
     definitionURL: string
 }
 
@@ -27,6 +28,7 @@ async function createAsync(params: IParams): Promise<OutlineMesh> {
     const program = await createProgramAsync(scene)
     return new OutlineMesh({
         scene,
+        transfo: params.transfo,
         arrayBuffer,
         attributesCount,
         program

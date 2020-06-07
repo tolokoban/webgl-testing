@@ -1,10 +1,12 @@
 import Mesh from '../mesh'
 import Scene from '../../scene'
 import Program from '../../program'
+import Transfo from '../../transfo'
 import ArrayBuffer from '../../buffer/array-buffer'
 
 interface IFresnelMeshParams {
     scene: Scene
+    transfo: Transfo
     attributesCount: number
     arrayBuffer: ArrayBuffer
     program: Program
@@ -17,10 +19,10 @@ const A = 3
 
 export default class OutlineMesh extends Mesh {
     public readonly color = new Float32Array([0, 0, 0, 1])
-    public thickness = 1
+    public thickness = 2
 
     constructor(private params: IFresnelMeshParams) {
-        super()
+        super(params.transfo)
         console.info("params=", params)
     }
 
@@ -52,7 +54,7 @@ export default class OutlineMesh extends Mesh {
         camera.setUniformValues(program, scene.width, scene.height, time)
         program.uniforms.set("uniColor", this.color)
         program.uniforms.set("uniThickness", this.thickness * THICKNESS_MULTIPLIER)
-        program.uniforms.set("uniObjectTransfo", this.transfo)
+        program.uniforms.set("uniObjectTransfo", this.transfo.value)
         program.bindAttribs(arrayBuffer.buffer)
         gl.drawArrays(gl.TRIANGLES, 0, attributesCount)
     }
