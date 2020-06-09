@@ -91,7 +91,7 @@ class Textures:
 
     def key(self, texture_coords):
         (u, v) = texture_coords
-        return "%.5f,%.5f" % (u, v)
+        return "%.5f,%.5f" % (u, 1 - v)
 
     def add(self, texture_coords):
         key = self.key(texture_coords)
@@ -142,7 +142,7 @@ class Normals:
         return self.arr[:]
 
 
-def export(original_object, directory):
+def export(object, directory):
     """
     {
         "vertices": [x,y,z,...],
@@ -157,21 +157,8 @@ def export(original_object, directory):
         ]
     }
     """
-    filepath = f"{directory}/{original_object.name}.json"
-    print(f"Exporting object '{original_object.name}' into {filepath}...")
-    object = original_object.copy()
-    object.data = original_object.data.copy()
-    bpy.data.collections["Collection"].objects.link(object)
-    object.select_set(True)
-    print(f"Duplicated in '{object.name}'...")
-    modifiers = object.modifiers
-    if modifiers != None:
-        for modifier in modifiers[:]:
-            try:
-                bpy.ops.object.modifier_apply(apply_as='DATA', modifier=modifier.name)
-            except Exception as ex:
-                print(f"ERROR with modifier '{modifier.name}': {str(ex)}")
-
+    filepath = f"{directory}/{object.name}.json"
+    print(f"Exporting object '{object.name}' into {filepath}...")
     mesh = object.to_mesh()
     mesh_triangulate(mesh)
     mesh.calc_normals_split()
@@ -207,7 +194,7 @@ def export(original_object, directory):
 
     print(filepath)
     with open(filepath, "w", encoding="utf8", newline="\n") as f:
-        f.write('{"name":' + json.dumps(original_object.name) + ',\n')
+        f.write('{"name":' + json.dumps(object.name) + ',\n')
         f.write('"vertices":[')
         f.write(",".join([x.key for x in vertices.get_array()]))
         f.write('],\n')
@@ -221,18 +208,16 @@ def export(original_object, directory):
         f.write('"faces":[')
         f.write(",".join(faces))
         f.write(']}')
-    bpy.ops.object.delete(use_global=False)
 
+# export(bpy.context.active_object, "/home/tolokoban/Code/github/webgl-testing/public/assets/mesh")
 
-export(bpy.context.active_object, "/home/tolokoban/Code/github/webgl-testing/public/assets/mesh")
-
-# objects_to_export = [obj.name for obj in bpy.data.objects if obj.type == 'MESH']
+objects_to_export = [obj.name for obj in bpy.data.objects if obj.type == 'MESH']
 # objects_to_select = [obj.name for obj in bpy.data.objects if obj.select_get() == True and obj.type == 'MESH']
 # bpy.ops.object.select_all(action='DESELECT')
 
-# for object_name in objects_to_export:
-#     object = bpy.data.objects[object_name]
-#     export(object, "/home/tolokoban/Code/github/webgl-testing/public/assets/mesh")
+for object_name in objects_to_export:
+    object = bpy.data.objects[object_name]
+    export(object, "/home/tolokoban/Code/github/webgl-testing/public/assets/mesh")
 
 # for object_name in objects_to_select:
 #     object = bpy.data.objects[object_name]

@@ -1,0 +1,20 @@
+{
+    "en": {
+        "type-balzac": "Slow (5')",
+        "type-golgoth": "Very Slow (10')",
+        "type-hydre": "Fast (2')",
+        "type-tyson": "Very Fast (1')"
+    },
+    "fr": {
+        "story1": "Les habitants de l'île flottante VOLCANO sont en danger!",
+        "story2a": "VOLCANO va cesser de flotter dans...",
+        "story2b": "Et tomber dans le néant !",
+        "story3": "Il faut les aider à rejoindre l'île flottante MOLINO.",
+        "story4": "Pour cela, ils devront sauter sur un rocher intermédiaire sur lequel il pleut tout le temps et il n'y a de la place que pour 2.",
+        "story5": "Il leur faudra donc utiliser l'unique parapluie.",
+        "type-balzac": "Lent (5')",
+        "type-golgoth": "Très Lent (10')",
+        "type-hydre": "Rapide (2')",
+        "type-tyson": "Très Rapide (1')"
+    }
+}
