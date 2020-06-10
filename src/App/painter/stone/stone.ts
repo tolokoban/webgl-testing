@@ -1,7 +1,9 @@
-import Scene from '../../gl/scene'
-import Painter from './painter'
-import WorldObj from '../world-obj'
-import WorldObjFactory from '../world-obj-factory'
+import Scene from '../../../gl/scene'
+import Painter from '../painter'
+import WorldObj from '../../world-obj'
+import WorldObjFactory from '../../world-obj-factory'
+import Rain from './rain'
+import RainFactory from './rain/rain-factory'
 
 export default {
     async createAsync(scene: Scene): Promise<StoneIsland> {
@@ -11,13 +13,18 @@ export default {
         const helixObject = await WorldObjFactory.createAsync(
             scene, './assets/mesh/Helix.json'
         )
-        return new StoneIsland(mainObject, helixObject)
+        const rain = await RainFactory.createAsync(scene)
+        return new StoneIsland(mainObject, helixObject, rain)
     }
 }
 
 
 class StoneIsland extends Painter {
-    constructor(private mainObject: WorldObj, private helixObject: WorldObj) {
+    constructor(
+        private mainObject: WorldObj,
+        private helixObject: WorldObj,
+        private rain: Rain
+    ) {
         super()
         helixObject.transfo.parent = mainObject.transfo
         const scale = 3
@@ -33,6 +40,7 @@ class StoneIsland extends Painter {
     paint(time: number) {
         this.helixObject.transfo.lng = -time * 0.2
 
+        this.rain.paint(time)
         this.mainObject.paint(time)
         this.helixObject.paint(time)
     }
