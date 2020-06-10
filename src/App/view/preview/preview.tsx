@@ -1,18 +1,15 @@
 import React from "react"
 import Tfw from 'tfw'
 import Scene from '../../../gl/scene'
-import WorldObj from '../../world-obj'
-import WorldObjFactory from '../../world-obj-factory'
 import PerspectiveCamera from '../../../gl/camera/perpective'
+import Painter from '../../painter'
 import Calc from '../../../gl/calc'
 
-import "./hero.css"
+import "./preview.css"
 
-const _ = Tfw.Intl.make(require("./hero.yaml"))
-
-interface IHeroProps {
+interface IPreviewProps {
     className?: string
-    file: string
+    painter(scene: Scene): Promise<Painter>
     name?: string
     type?: string
     x?: number
@@ -23,7 +20,7 @@ interface IHeroProps {
     onLoad?(): void
 }
 
-export default class Hero extends React.Component<IHeroProps, {}> {
+export default class Preview extends React.Component<IPreviewProps, {}> {
     private refCanvas = React.createRef<HTMLCanvasElement>()
 
     async componentDidMount() {
@@ -31,11 +28,8 @@ export default class Hero extends React.Component<IHeroProps, {}> {
         if (!canvas) return
         const scene = new Scene(canvas)
         scene.camera = new PerspectiveCamera()
+        const painter = await this.props.painter(scene)
         const { gl } = scene
-        const hero: WorldObj = await WorldObjFactory.createAsync(
-            scene,
-            `./assets/mesh/${this.props.file}`
-        )
 
         const dis = this.props.dis || 4
         const lat = Calc.deg2rad(this.props.lat || 15)
@@ -54,7 +48,7 @@ export default class Hero extends React.Component<IHeroProps, {}> {
             const camera = scene.camera as PerspectiveCamera
             camera.orbit(x, y, z, dis, lat, lng)
 
-            hero.paint(time)
+            painter.paint(time)
         }
 
         scene.isRendering = true
@@ -63,15 +57,15 @@ export default class Hero extends React.Component<IHeroProps, {}> {
 
     render() {
         const classes = [
-            'app-view-Hero',
+            'app-view-Preview',
             ...Tfw.Converter.StringArray(this.props.className, [])
         ]
         const { name, type } = this.props
 
         return (<div className={classes.join(' ')}>
             <canvas ref={this.refCanvas}></canvas>
-            { name && <div className="name">{name}</div>}
-            { type && <div className="type">{type}</div>}
+            {name && <div className="name">{name}</div>}
+            {type && <div className="type">{type}</div>}
         </div>)
     }
 }

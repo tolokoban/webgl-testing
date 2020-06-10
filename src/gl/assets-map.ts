@@ -1,39 +1,57 @@
 export default class AssetsMap<T> {
+    private lockedIds = new Set<string>()
     private map = new Map<string, { count: number, value: T }>()
 
+
+    private async lockAsync(id: string): Promise<void> {
+        const sleepDelay = 100
+        const { lockedIds } = this
+        while (lockedIds.has(id)) {
+            await sleepAsync(sleepDelay)
+        }
+        lockedIds.add(id)
+    }
+
+    private unlock(id: string) {
+        this.lockedIds.delete(id)
+    }
+
     /**
-     * Warning!
-     * If this function returns true,
-     * it also increments the link counter on the found item.
+     * If the ID already exist, the link counter is incremented and nothing else is done.
+     * Otherwise, the async function `createValue` is called and its return is stored in the map.
+     *
+     * This function is thread-safe.
+     * Fo the same ID, `createValue` is only called for the first call of `add`.
      */
-    exists(id: string): boolean {
+    async addAsync(id: string, createValue: () => Promise<T>): Promise<T> {
+        await this.lockAsync(id)
+        try {
+            const { map } = this
+            if (map.has(id)) {
+                const item = map.get(id)
+                if (!item) throw Error("Impossible error on map!")
+                item.count++
+                return item.value
+            }
+            const value = await createValue()
+            map.set(id, { count: 1, value })
+            return value
+        } finally {
+            this.unlock(id)
+        }
+    }
+
+    add(id: string, createValue: () => T): T {
         const { map } = this
         if (map.has(id)) {
             const item = map.get(id)
-            if (item) item.count++
-            return true
+            if (!item) throw Error("Impossible error on map!")
+            item.count++
+            return item.value
         }
-        return false
-    }
-
-    get(id: string): T | undefined {
-        const item = this.map.get(id)
-        if (!item) return
-        return item.value
-    }
-
-    /**
-     * Warning!
-     * If an item with the same id already exists,
-     * this functioin will throw an exception.
-     */
-    add(id: string, value: T) {
-        const item = this.map.get(id)
-        if (!item) {
-            this.map.set(id, { count: 1, value })
-        } else {
-            throw Error(`An item with id "${id}" already exists!`)
-        }
+        const value = createValue()
+        map.set(id, { count: 1, value })
+        return value
     }
 
     /**
@@ -50,4 +68,9 @@ export default class AssetsMap<T> {
         }
         return item.count
     }
+}
+
+
+async function sleepAsync(delayInMs: number): Promise<void> {
+    return new Promise(resolve => window.setTimeout(resolve, delayInMs))
 }

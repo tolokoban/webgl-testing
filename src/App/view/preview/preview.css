@@ -1,8 +1,8 @@
-div.app-view-Hero {
+div.app-view-Preview {
     font-size: 3vmin;
 }
 
-div.app-view-Hero > canvas {
+div.app-view-Preview > canvas {
     position: absolute;
     left: 0;
     top: 0;
@@ -10,8 +10,8 @@ div.app-view-Hero > canvas {
     height: 100%;
 }
 
-div.app-view-Hero > div.name,
-div.app-view-Hero > div.type {
+div.app-view-Preview > div.name,
+div.app-view-Preview > div.type {
     position: absolute;
     left: 0;
     right: 0;
@@ -20,13 +20,13 @@ div.app-view-Hero > div.type {
     text-shadow: 0.1em 0.1em #000;
 }
 
-div.app-view-Hero > div.name {
+div.app-view-Preview > div.name {
     font-size: 200%;
     font-variant: small-caps;
     top: 0;
     font-weight: bolder;
 }
 
-div.app-view-Hero > div.type {
+div.app-view-Preview > div.type {
     bottom: 0;
 }

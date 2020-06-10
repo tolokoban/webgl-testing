@@ -1,6 +1,14 @@
 import React from "react"
 import Tfw from 'tfw'
-import Hero from '../hero'
+import Preview from '../preview'
+import GolgothPainter from '../../painter/golgoth'
+import BalzacPainter from '../../painter/balzac'
+import HydrePainter from '../../painter/hydre'
+import TysonPainter from '../../painter/tyson'
+import VolcanoPainter from '../../painter/volcano'
+import StonePainter from '../../painter/stone'
+import MolinoPainter from '../../painter/molino'
+import UmbrellaPainter from '../../painter/umbrella'
 
 import "./intro.css"
 
@@ -29,6 +37,15 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
         hydre: false,
         tyson: false,
         done: false
+    }
+
+    componentDidMount() {
+        window.document.addEventListener("keyup", (evt: KeyboardEvent) => {
+            if (evt.key === 'Escape') {
+                this.setState({ page: 666 }, this.handleNextPage)
+            }
+        })
+
     }
 
     handleLoad = (name: keyof IIntroState) => {
@@ -81,34 +98,34 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
         }
 
         return (<div className={classes.join(' ')}>
-            <Hero
+            <Preview
                 y={1}
                 className="golgoth"
-                file="Golgoth.json"
+                painter={GolgothPainter.createAsync}
                 name="golgoth"
                 type={_('type-golgoth')}
                 onLoad={() => this.handleLoad("golgoth")}
             />
-            <Hero
+            <Preview
                 y={1}
                 className="balzac"
-                file="Balzac.json"
+                painter={BalzacPainter.createAsync}
                 name="balzac"
                 type={_('type-balzac')}
                 onLoad={() => this.handleLoad("balzac")}
             />
-            <Hero
+            <Preview
                 y={0}
                 className="hydre"
-                file="Hydre.json"
+                painter={HydrePainter.createAsync}
                 name="hydre"
                 type={_('type-hydre')}
                 onLoad={() => this.handleLoad("hydre")}
             />
-            <Hero
+            <Preview
                 y={1}
                 className="tyson"
-                file="Tyson.json"
+                painter={TysonPainter.createAsync}
                 name="tyson"
                 type={_('type-tyson')}
                 onLoad={() => this.handleLoad("tyson")}
@@ -116,11 +133,11 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
             <div className="story">
                 <section className={this.page(0)}>
                     <p>{_('story1')}</p>
-                    <Hero
+                    <Preview
                         className="small-canvas"
                         dis={42}
                         lat={45}
-                        file="Island-A.json"
+                        painter={VolcanoPainter.createAsync}
                     />
                     <Button
                         icon="right"
@@ -140,11 +157,11 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
                 </section>
                 <section className={this.page(2)}>
                     <p>{_('story3')}</p>
-                    <Hero
+                    <Preview
                         className="small-canvas"
                         dis={38}
                         lat={45}
-                        file="Island-B.json"
+                        painter={MolinoPainter.createAsync}
                     />
                     <Button
                         icon="right"
@@ -154,12 +171,12 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
                 </section>
                 <section className={this.page(3)}>
                     <p>{_('story4')}</p>
-                    <Hero
+                    <Preview
                         className="small-canvas"
                         dis={20}
                         lat={40}
                         y={4}
-                        file="Stone.json"
+                        painter={StonePainter.createAsync}
                     />
                     <Button
                         icon="right"
@@ -169,12 +186,12 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
                 </section>
                 <section className={this.page(4)}>
                     <p>{_('story5')}</p>
-                    <Hero
+                    <Preview
                         className="small-canvas"
                         dis={10}
                         lat={20}
                         y={0}
-                        file="Umbrella.json"
+                        painter={UmbrellaPainter.createAsync}
                     />
                     <Button
                         icon="right"

@@ -11,10 +11,21 @@ const _ = Tfw.Intl.make(require("./game.yaml"))
 interface IGameProps {
     className?: string[]
 }
-interface IGameState {}
+interface IGameState {
+    loaded: boolean
+}
 
 export default class Game extends React.Component<IGameProps, IGameState> {
-    state = {}
+    private refCanvas = React.createRef<HTMLCanvasElement>()
+
+    state = {        loaded: false    }
+
+    async componentDidMount() {
+        const canvas =  this.refCanvas.current
+        if (!canvas) return
+
+        
+    }
 
     render() {
         const classes = [
@@ -22,8 +33,6 @@ export default class Game extends React.Component<IGameProps, IGameState> {
             ...Tfw.Converter.StringArray(this.props.className, [])
         ]
 
-        return (<div className={classes.join(' ')}>
-            <Button label={_('ok')} />
-        </div>)
+        return <canvas ref={this.refCanvas} className={classes.join(' ')}></canvas>
     }
 }

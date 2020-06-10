@@ -13,18 +13,18 @@ export default class ProgramFactory {
         vertShader: Partial<IFriendlyVertexDefinition>,
         fragShader: Partial<IFriendlyFragmentDefinition>
     ): Promise<Program> {
-        if (this.programMap.exists(id)) {
-            return this.programMap.get(id) as Program
-        }
-
-        const { gl } = this
-        const program = new Program(
-            gl,
-            ShaderFactory.createVertShader(vertShader),
-            ShaderFactory.createFragShader(fragShader)
+        return this.programMap.addAsync(
+            id,
+            async () => {
+                const { gl } = this
+                const program = new Program(
+                    gl,
+                    ShaderFactory.createVertShader(vertShader),
+                    ShaderFactory.createFragShader(fragShader)
+                )
+                await program.attach()
+                return program
+            }
         )
-        await program.attach()
-        this.programMap.add(id, program)
-        return program
     }
 }

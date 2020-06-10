@@ -65,7 +65,7 @@ export default class PolarLocSca extends Transfo {
         this._dirty = true
     }
 
-    get value() {
+    protected compute() {
         if (!this._dirty) return this.transfo
 
         const { x, y, z, sx, sy, sz, lat, lng, transfo } = this

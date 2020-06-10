@@ -12,9 +12,12 @@ export default {
 
 async function createOrGetFromCacheMeshDefinition(definitionURL: string): Promise<MeshDefinition> {
     const id = definitionURL
-    if (!MeshDefinitions.exists(definitionURL)) {
-        const definition = (await AsyncLoader.loadJson(definitionURL)) as IMeshDefinition
-        MeshDefinitions.add(id, new MeshDefinition(id, definition))
-    }
-    return MeshDefinitions.get(id) as MeshDefinition
+    return MeshDefinitions.addAsync(
+        definitionURL,
+        async () => {
+            const definition =
+                (await AsyncLoader.loadJson(definitionURL)) as IMeshDefinition
+            return new MeshDefinition(id, definition)
+        }
+    )
 }
