@@ -1,1 +1,13 @@
-div.app-view-Game {}
+.app-view-Game {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vmin;
+    height: 100vmin;
+    opacity: 0;
+}
+
+.app-view-Game.show {
+    transition: opacity .5s;
+    opacity: 1;
+}

@@ -2,6 +2,14 @@ div.app-view-Preview {
     font-size: 3vmin;
 }
 
+div.app-view-Preview.frame > canvas {
+    border-radius: .5rem;
+    border: .5rem solid #fff;
+    border-radius: .5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 8px #000;
+}
+
 div.app-view-Preview > canvas {
     position: absolute;
     left: 0;
@@ -28,5 +36,5 @@ div.app-view-Preview > div.name {
 }
 
 div.app-view-Preview > div.type {
-    bottom: 0;
+    top: 2em;
 }

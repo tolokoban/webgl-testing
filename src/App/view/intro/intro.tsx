@@ -135,7 +135,7 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
                     <p>{_('story1')}</p>
                     <Preview
                         className="small-canvas"
-                        dis={42}
+                        dis={20}
                         lat={45}
                         painter={VolcanoPainter.createAsync}
                     />
@@ -173,9 +173,9 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
                     <p>{_('story4')}</p>
                     <Preview
                         className="small-canvas"
-                        dis={20}
+                        dis={15}
                         lat={40}
-                        y={4}
+                        y={3}
                         painter={StonePainter.createAsync}
                     />
                     <Button
@@ -188,8 +188,8 @@ export default class Intro extends React.Component<IIntroProps, IIntroState> {
                     <p>{_('story5')}</p>
                     <Preview
                         className="small-canvas"
-                        dis={10}
-                        lat={20}
+                        dis={7}
+                        lat={15}
                         y={0}
                         painter={UmbrellaPainter.createAsync}
                     />

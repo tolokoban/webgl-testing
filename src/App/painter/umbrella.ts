@@ -3,17 +3,15 @@ import Painter from './painter'
 import WorldObj from '../world-obj'
 import WorldObjFactory from '../world-obj-factory'
 
-export default {
-    async createAsync(scene: Scene): Promise<Umbrella> {
+export default class Umbrella extends Painter {
+    static async createAsync(scene: Scene): Promise<Umbrella> {
         const mainObject = await WorldObjFactory.createAsync(
             scene, './assets/mesh/Umbrella.json'
         )
         return new Umbrella(mainObject)
     }
-}
 
-class Umbrella extends Painter {
-    constructor(private mainObject: WorldObj) {
+    private constructor(private mainObject: WorldObj) {
         super()
     }
 

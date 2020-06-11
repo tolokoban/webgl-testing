@@ -3,8 +3,8 @@ import Painter from './painter'
 import WorldObj from '../world-obj'
 import WorldObjFactory from '../world-obj-factory'
 
-export default {
-    async createAsync(scene: Scene): Promise<MolinoIsland> {
+export default class MolinoIsland extends Painter {
+    static async createAsync(scene: Scene): Promise<MolinoIsland> {
         const mainObject = await WorldObjFactory.createAsync(
             scene, './assets/mesh/Island-B.json'
         )
@@ -13,14 +13,12 @@ export default {
         )
         return new MolinoIsland(mainObject, helixObject)
     }
-}
 
-class MolinoIsland extends Painter {
-    constructor(private mainObject: WorldObj, private helixObject: WorldObj) {
+    private constructor(private mainObject: WorldObj, private helixObject: WorldObj) {
         super()
         helixObject.transfo.parent = mainObject.transfo
         helixObject.transfo.y = 10
-        const scale = 6
+        const scale = 10
         helixObject.transfo.sx = scale
         helixObject.transfo.sy = scale
         helixObject.transfo.sz = scale

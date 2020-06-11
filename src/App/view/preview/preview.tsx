@@ -21,16 +21,21 @@ interface IPreviewProps {
 }
 
 export default class Preview extends React.Component<IPreviewProps, {}> {
+    private scene?: Scene
     private refCanvas = React.createRef<HTMLCanvasElement>()
 
     async componentDidMount() {
         const canvas = this.refCanvas.current
         if (!canvas) return
         const scene = new Scene(canvas)
+        this.scene = scene
         scene.camera = new PerspectiveCamera()
         const painter = await this.props.painter(scene)
         const { gl } = scene
-
+        gl.clearColor(0, 0, 0, 0)
+        if (!this.props.name) {
+            gl.clearColor(0.3, 0.5, 0.9, 1.0)
+        }
         const dis = this.props.dis || 4
         const lat = Calc.deg2rad(this.props.lat || 15)
         const x = this.props.x || 0
@@ -38,7 +43,6 @@ export default class Preview extends React.Component<IPreviewProps, {}> {
         const z = this.props.z || 0
 
         scene.onAnimation = (time: number) => {
-            gl.clearColor(0, 0, 0, 0)
             gl.clearDepth(+1)
             gl.depthFunc(gl.LESS)
             gl.enable(gl.DEPTH_TEST)
@@ -55,11 +59,18 @@ export default class Preview extends React.Component<IPreviewProps, {}> {
         if (typeof this.props.onLoad === 'function') this.props.onLoad()
     }
 
+    componentWillUnmount() {
+        const { scene } = this
+        if (!scene) return
+        scene.isRendering = false
+    }
+
     render() {
         const classes = [
             'app-view-Preview',
             ...Tfw.Converter.StringArray(this.props.className, [])
         ]
+        if (!this.props.name) classes.push("frame")
         const { name, type } = this.props
 
         return (<div className={classes.join(' ')}>

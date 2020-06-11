@@ -3,17 +3,15 @@ import Painter from './painter'
 import WorldObj from '../world-obj'
 import WorldObjFactory from '../world-obj-factory'
 
-export default {
-    async createAsync(scene: Scene): Promise<Balzac> {
+export default class Balzac extends Painter {
+    static async createAsync(scene: Scene): Promise<Balzac> {
         const mainObject = await WorldObjFactory.createAsync(
             scene, './assets/mesh/Balzac.json'
         )
         return new Balzac(mainObject)
     }
-}
 
-class Balzac extends Painter {
-    constructor(private mainObject: WorldObj) {
+    private constructor(private mainObject: WorldObj) {
         super()
     }
 

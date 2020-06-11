@@ -1,39 +1,40 @@
 import Scene from '../../../../gl/scene'
-import RainPainter from './rain'
+import SmokePainter from './smoke'
 
 import MainVertShader from './main.vert'
 import MainFragShader from './main.frag'
 
 
-const DROPS_COUNT = 300
-const TIME_TO_FALL = 500
-const MAX_CYCLE = 500
+const DROPS_COUNT = 100
+const BASE_RADIUS = 0.5
+const LIFE_TIME = 20000
+const EXTRA_LIFE_TIME = 1000
 
 
 export default {
-    async createAsync(scene: Scene): Promise<RainPainter> {
-        const arrayBuffer = scene.buffers.createArrayBuffer("particle.rain", createData())
+    async createAsync(scene: Scene): Promise<SmokePainter> {
+        const arrayBuffer = scene.buffers.createArrayBuffer("particle.smoke", createData())
         const program = await createProgramAsync(scene)
-        return new RainPainter(scene, program, arrayBuffer, DROPS_COUNT)
+        return new SmokePainter(scene, program, arrayBuffer, DROPS_COUNT)
     }
 }
 
 async function createProgramAsync(scene: Scene) {
     const { camera } = scene
     const program = await scene.programs.createProgramAsync(
-        `[PARTICLE.RAIN]:${camera.id}`,
+        `[PARTICLE.SMOKE]:${camera.id}`,
         {
             uniforms: {
                 uniTime: "float",
+                uniDropSize: "float",
                 uniObjectTransfo: "mat4"
             },
-            varyings: { varSegment: "float" },
+            varyings: { varTime: "float" },
             attributes: {
                 attLocation: "vec3",
                 attShift: "float",
                 attCycle: "float",
-                attCycleInv: "float",
-                attSegment: "float"
+                attCycleInv: "float"
             },
             functions: { main: MainVertShader },
             dependencies: [camera.vertexShader]
@@ -48,14 +49,15 @@ async function createProgramAsync(scene: Scene) {
 function createData(): Float32Array {
     const data: number[] = []
     for (let loop = 0; loop < DROPS_COUNT; loop++) {
-        const cycleTime = Math.floor(rnd(TIME_TO_FALL, TIME_TO_FALL + MAX_CYCLE))
-        const shiftTime = Math.floor(rnd(0, TIME_TO_FALL))
-        const x = rnd(-1, +1)
-        const y = 8
-        const z = rnd(-2, +2)
+        const cycleTime = Math.floor(rnd(LIFE_TIME, LIFE_TIME + EXTRA_LIFE_TIME))
+        const shiftTime = Math.floor(rnd(0, LIFE_TIME))
         data.push(
-            x, y, z, shiftTime, cycleTime, 1 / cycleTime, 0,
-            x, y, z, shiftTime, cycleTime, 1 / cycleTime, 1
+            rnd(-BASE_RADIUS, +BASE_RADIUS),
+            0,
+            rnd(-BASE_RADIUS, +BASE_RADIUS),
+            shiftTime,
+            cycleTime,
+            1 / cycleTime
         )
     }
     return new Float32Array(data)

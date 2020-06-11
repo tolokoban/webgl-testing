@@ -3,17 +3,15 @@ import Painter from './painter'
 import WorldObj from '../world-obj'
 import WorldObjFactory from '../world-obj-factory'
 
-export default {
-    async createAsync(scene: Scene): Promise<Golgoth> {
+export default class Golgoth extends Painter {
+    static async createAsync(scene: Scene): Promise<Golgoth> {
         const mainObject = await WorldObjFactory.createAsync(
             scene, './assets/mesh/Golgoth.json'
         )
         return new Golgoth(mainObject)
     }
-}
 
-class Golgoth extends Painter {
-    constructor(private mainObject: WorldObj) {
+    private constructor(private mainObject: WorldObj) {
         super()
     }
 

@@ -1,0 +1,22 @@
+div.app-view-Controls {
+    position: absolute;
+    left: 100vmin;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: #555;
+    border: none;
+    border-left: 2px solid #000;
+}
+
+@media (orientation: portrait) {
+    div.app-view-Controls {
+        position: absolute;
+        left: 0;
+        top: 100vmin;
+        right: 0;
+        bottom: 0;
+        border: none;
+        border-top: 2px solid #000;
+    }
+}
