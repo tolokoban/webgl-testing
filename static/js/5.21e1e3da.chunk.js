@@ -1,0 +1,2 @@
+(this["webpackJsonpwebgl-testing"]=this["webpackJsonpwebgl-testing"]||[]).push([[5],{72:function(n,t,e){"use strict";var o=function(){function n(n){this.name=n}return n.prototype.load=function(){console.log("Font loaded: ",this.name)},n}();t.a=o},73:function(n,t,e){},78:function(n,t,e){"use strict";e.r(t);var o=e(72);e(73);t.default=new o.a("josefin-sans")}}]);
+//# sourceMappingURL=5.21e1e3da.chunk.js.map
