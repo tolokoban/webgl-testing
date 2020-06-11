@@ -45,10 +45,10 @@ export default class App extends React.Component<IAppProps, IAppState> {
                 !intro &&
                 <Game gameManager={this.gameManager} />
             }
-            {
+            {/*
                 !intro &&
                 <Controls gameManager={this.gameManager} />
-            }
+            */}
         </div>)
     }
 }
