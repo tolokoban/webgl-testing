@@ -1,9 +1,12 @@
 void main() {
+    float lightEffect = 0.0;
+    //vec3 lights[1] = normalize(vec3(1, 0.75, -1));
+
     vec3 light = normalize(vec3(1, 0.75, -1));
     vec3 reflexion = normalize(varReflexion);
     vec3 normal = normalize(varNormal);
     float power = dot(light, reflexion);
-    float lightEffect = (power + 1.1) * 0.5;
+    lightEffect += (power + 1.5) * 0.5;
     vec3 color = texture2D(uniTexture, varUV).xyz * lightEffect;
 
     float fresnel = 1.0 - smoothstep(0.0, 0.3, abs(normal.z));
